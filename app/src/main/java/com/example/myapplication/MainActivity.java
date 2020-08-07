@@ -11,22 +11,41 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    Button Capturarbtn;
+    ImageView cImageView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        Capturarbtn=(Button) findViewById(R.id.btn_capturar);
+        cImageView=(ImageView) findViewById(R.id.imageView);
+
+        Capturarbtn.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+                llamaIntent();
+            }
+        } );
 
         ArrayList<String> permisos = new ArrayList<String>();
         permisos.add(Manifest.permission.CAMERA);
@@ -36,7 +55,17 @@ public class MainActivity extends AppCompatActivity {
 
 
         getPermission(permisos);
+
+
     }
+
+    private void llamaIntent(){
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
 
     public void getPermission(ArrayList<String> permisosSolicitados){
 
@@ -84,7 +113,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            cImageView.setImageBitmap(imageBitmap);
+        }
         switch(requestCode) {
             case 9999:
                 Log.i("Test", "Result URI " + data.getData());

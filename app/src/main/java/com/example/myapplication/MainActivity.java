@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
 
     }
-    public String DataPath="";
+    public Uri DataPath;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         switch(requestCode) {
             case 9999:
                 Log.i("Test", "Result URI " + data.getData());
-                DataPath= data.getDataString();
+                DataPath= data.getData();
                 break;
         }
     }
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        Toast toast = Toast.makeText(this, DataPath, Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(this, DataPath.toString(), Toast.LENGTH_SHORT);
         toast.show();
         System.out.println(DataPath);
         String url = "https://www.uteq.edu.ec/revistacyt/archivositio/instrucciones_arbitros.pdf";
@@ -112,8 +112,9 @@ public class MainActivity extends AppCompatActivity {
                 request.allowScanningByMediaScanner();
                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
             }
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "filedownload.pdf");
+        request.setDestinationInExternalPublicDir(DataPath.toString(), "filedownload.pdf");
         System.out.println(Environment.DIRECTORY_DOWNLOADS);
+        System.out.println(DataPath.toString());
         DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
         try {
             manager.enqueue(request);
